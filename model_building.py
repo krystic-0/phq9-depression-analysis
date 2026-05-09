@@ -209,7 +209,7 @@ class DepressionModelBuilder:
         n_samples = len(X_sample)
         perplexity = min(30, n_samples - 1)
         logger.info(f"使用perplexity={perplexity}（样本数量={n_samples}）")
-        tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity, n_iter=300)
+        tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity)
         tsne_result = tsne.fit_transform(X_sample)
 
         # 用matplotlib保存t-SNE静态图（避免kaleido依赖Chrome）

@@ -35,10 +35,9 @@ class OptimizedClustering:
         """使用t-SNE降维"""
         logger.info(f"开始t-SNE降维（perplexity={perplexity}, max_iter={max_iter}, learning_rate={learning_rate}）...")
         tsne = TSNE(
-            n_components=2, 
-            random_state=self.random_state, 
-            perplexity=perplexity, 
-            max_iter=max_iter,
+            n_components=2,
+            random_state=self.random_state,
+            perplexity=perplexity,
             learning_rate=learning_rate,
             n_jobs=-1  # 使用所有CPU核心
         )
