@@ -277,22 +277,11 @@ def render_clustering_page():
     st.markdown("---")
     st.markdown("### 📊 聚类分析结果")
 
-    tsne_image_path = "outputs/images/t_sne自杀检测聚类可视化.png"
+    tsne_image_path = "outputs/images/clustering_visualization.png"
     evaluation_image_path = "outputs/images/clustering_evaluation.png"
-    
-    # t-SNE可视化 -- 优先从 session_state 读取，使用 Plotly 交互图
-    if st.session_state.get('cluster_tsne_result') is not None and st.session_state.get('cluster_labels') is not None:
-        st.subheader("t-SNE聚类可视化分析")
-        with st.expander("图表解释"):
-            st.write("t-SNE (t-distributed Stochastic Neighbor Embedding) 是一种非线性降维技术，专门用于将高维数据投影到二维空间，实现聚类/分类效果的可视化。")
-            st.write("- **坐标轴**：x轴为t-SNE 1，y轴为t-SNE 2，代表降维后的两个低维空间")
-            st.write("- **颜色**：不同颜色代表不同的聚类/分类标签（簇编号）")
-            st.write("- **点**：每个点代表一个文本样本")
-            st.write("- **距离**：点之间的距离表示样本特征的相似性，相似样本会聚集在一起")
-        from visualization import plot_tsne_clustering
-        fig = plot_tsne_clustering(st.session_state.get('cluster_tsne_result'), st.session_state.get('cluster_labels'))
-        st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
-    elif os.path.exists(tsne_image_path):
+
+    # t-SNE可视化 —— 始终显示预生成静态图，不随重新聚类变化
+    if os.path.exists(tsne_image_path):
         st.subheader("t-SNE聚类可视化分析")
         with st.expander("图表解释"):
             st.write("t-SNE (t-distributed Stochastic Neighbor Embedding) 是一种非线性降维技术，专门用于将高维数据投影到二维空间，实现聚类/分类效果的可视化。")
@@ -302,17 +291,14 @@ def render_clustering_page():
         st.image(tsne_image_path, use_container_width=True)
     else:
         st.info("尚未运行聚类分析，请点击上方「重新聚类分析」按钮生成结果。")
-    
-    
+
     # 显示聚类评估
     if os.path.exists(evaluation_image_path):
         st.subheader("聚类评估")
-        # 添加解释下拉菜单
         with st.expander("图表解释"):
             st.write("聚类评估展示了不同聚类算法的性能指标。")
             st.write("- **指标**：包括轮廓系数、Calinski-Harabasz指数、Davies-Bouldin指数等")
             st.write("- **数值含义**：轮廓系数越接近1越好，Calinski-Harabasz指数越大越好，Davies-Bouldin指数越小越好")
-        # 显示图片
         st.image(evaluation_image_path, use_container_width=True)
     else:
         st.warning("聚类评估图片不存在")
@@ -332,6 +318,19 @@ def render_clustering_page():
             # 如果聚类结果文件不存在，尝试加载原始数据
             suicide_df = load_suicide_data()
         
+        # ── 重新聚类结果（放在最下方，与上方原始图对比）──
+        if st.session_state.get('cluster_tsne_result') is not None and st.session_state.get('cluster_labels') is not None:
+            st.markdown("---")
+            st.subheader("🔄 重新聚类结果")
+            with st.expander("图表解释"):
+                st.write("点击「重新聚类分析」后生成的新聚类结果。上方为原始预生成图，下方为实时计算结果，可对比查看。")
+            from visualization import plot_tsne_clustering
+            fig_new = plot_tsne_clustering(
+                st.session_state.cluster_tsne_result,
+                st.session_state.cluster_labels
+            )
+            st.plotly_chart(fig_new, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
+
         # 垂直堆叠布局
         # 簇画像分析
         st.subheader("簇画像分析")
