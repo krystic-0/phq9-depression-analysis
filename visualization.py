@@ -1298,7 +1298,7 @@ def plot_symptom_combination(depression_df):
     
     # 计算症状之间的共现频率
     # 首先将症状转换为二分类（0表示无症状，1表示有症状）
-    binary_symptoms = depression_df[phq_columns].applymap(lambda x: 1 if x > 0 else 0)
+    binary_symptoms = depression_df[phq_columns].map(lambda x: 1 if x > 0 else 0)
     
     # 计算共现矩阵
     co_occurrence = binary_symptoms.T.dot(binary_symptoms)
