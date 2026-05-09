@@ -231,15 +231,13 @@ def plot_cv_f1_bar(cv_results_df):
             font=dict(size=18, color="#333333")
         ),
         xaxis=dict(
-            title="模型",
+            title=dict(text="模型", font=dict(size=14)),
             tickangle=45,
-            titlefont=dict(size=14),
             tickfont=dict(size=12)
         ),
         yaxis=dict(
-            title="F1分数",
+            title=dict(text="F1分数", font=dict(size=14)),
             range=[0, 1],
-            titlefont=dict(size=14),
             tickfont=dict(size=12)
         ),
         hovermode="x unified",
@@ -302,17 +300,15 @@ def plot_cv_folds_comparison(cv_results_df):
             font=dict(size=18, color="#333333")
         ),
         xaxis=dict(
-            title="折数",
+            title=dict(text="折数", font=dict(size=14)),
             tickmode='linear',
             tick0=1,
             dtick=1,
-            titlefont=dict(size=14),
             tickfont=dict(size=12)
         ),
         yaxis=dict(
-            title="F1分数",
+            title=dict(text="F1分数", font=dict(size=14)),
             range=[0, 1],
-            titlefont=dict(size=14),
             tickfont=dict(size=12)
         ),
         hovermode="x unified",
@@ -1018,18 +1014,15 @@ def plot_elbow_method(k_values, inertia):
         ),
         # 坐标轴设置
         xaxis=dict(
-            title="聚类数 K",
-            titlefont=dict(size=14, color="#333333"),
+            title=dict(text="聚类数 K", font=dict(size=14, color="#333333")),
             tickfont=dict(size=12),
             showgrid=False,
-            # 确保x轴只显示整数（K值从1开始）
             tickmode="linear",
             tick0=1,
             dtick=1
         ),
         yaxis=dict(
-            title="SSE/Inertia",
-            titlefont=dict(size=14, color="#333333"),
+            title=dict(text="SSE/Inertia", font=dict(size=14, color="#333333")),
             tickfont=dict(size=12),
             showgrid=False
         ),
