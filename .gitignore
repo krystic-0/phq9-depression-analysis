@@ -1,6 +1,5 @@
 # 大型数据文件（超过100MB，GitHub禁止推送）
 outputs/csv/preprocessed_suicide_data.csv
-outputs/csv/preprocessed_depression_data.csv
 Dataset_14-day_AA_depression_symptoms_mood_and_PHQ-9.csv
 Suicide_Detection.csv
 
