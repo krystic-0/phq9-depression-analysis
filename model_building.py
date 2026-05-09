@@ -39,24 +39,44 @@ class DepressionModelBuilder:
         self.prediction_model = None
     
     def load_data(self):
-        """加载预处理后的数据"""
+        """加载预处理后的数据（云端部署时可能缺少部分文件，容错处理）"""
         logger.info("加载预处理后的数据...")
-        try:
-            self.depression_df = pd.read_csv("outputs/csv/preprocessed_depression_data.csv")
-            self.suicide_df = pd.read_csv("outputs/csv/preprocessed_suicide_data.csv")
-            logger.info(f"抑郁症状数据形状: {self.depression_df.shape}")
-            logger.info(f"自杀检测数据形状: {self.suicide_df.shape}")
-            return True
-        except Exception as e:
-            logger.error(f"加载数据失败: {e}")
-            return False
+        import os
+        loaded_any = False
+
+        # 加载抑郁数据
+        if os.path.exists("outputs/csv/preprocessed_depression_data.csv"):
+            try:
+                self.depression_df = pd.read_csv("outputs/csv/preprocessed_depression_data.csv")
+                logger.info(f"抑郁症状数据形状: {self.depression_df.shape}")
+                loaded_any = True
+            except Exception as e:
+                logger.error(f"加载抑郁数据失败: {e}")
+        else:
+            logger.warning("未找到 outputs/csv/preprocessed_depression_data.csv")
+
+        # 加载自杀数据
+        if os.path.exists("outputs/csv/preprocessed_suicide_data.csv"):
+            try:
+                self.suicide_df = pd.read_csv("outputs/csv/preprocessed_suicide_data.csv")
+                logger.info(f"自杀检测数据形状: {self.suicide_df.shape}")
+                loaded_any = True
+            except Exception as e:
+                logger.error(f"加载自杀数据失败: {e}")
+        else:
+            logger.warning("未找到 outputs/csv/preprocessed_suicide_data.csv，可在本地点「重新构建」生成")
+
+        return loaded_any
     
     def data_preparation(self):
         """数据准备与预处理"""
         logger.info("开始数据准备与预处理...")
-        
+
+        if self.depression_df is None:
+            logger.warning("抑郁数据未加载，跳过预处理")
+
         # 1. 处理抑郁症状数据
-        if 'phq9_total' in self.depression_df.columns:
+        if self.depression_df is not None and 'phq9_total' in self.depression_df.columns:
             # 选择相关特征
             phq_columns = [f"phq{i}" for i in range(1, 10)]
             numeric_columns = phq_columns + ['core_symptoms_score', 'symptom_count', 'phq9_total']
@@ -70,7 +90,7 @@ class DepressionModelBuilder:
             self.depression_df[[col + '_scaled' for col in numeric_columns]] = scaler.fit_transform(self.depression_df[numeric_columns])
             
         # 2. 处理自杀检测数据
-        if 'class_label' in self.suicide_df.columns:
+        if self.suicide_df is not None and 'class_label' in self.suicide_df.columns:
             # 选择更多特征
             suicide_features = ['text_length', 'suicide_keyword_count', 'sentiment_score', 'emotion_intensity', 'first_person_ratio', 'negative_word_ratio']
             
