@@ -1,0 +1,57 @@
+digraph system_architecture {
+	bgcolor="#F8F8FF" compound=true fontcolor="#333333" fontname="Microsoft YaHei" fontsize=14 label="抑郁症多维度心理特征分析系统 — 架构图" labeljust=c labelloc=t nodesep=0.6 rankdir=TB ranksep=0.8
+	raw1 [label="PHQ-9 14天追踪
+抑郁症状数据集" fillcolor="#D6EAF8" fontname="Microsoft YaHei" fontsize=12 shape=folder style="filled,rounded"]
+	raw2 [label="Suicide Detection
+自杀检测文本数据集" fillcolor="#D6EAF8" fontname="Microsoft YaHei" fontsize=12 shape=folder style="filled,rounded"]
+	prep [label="数据预处理
+(data_preprocessing.py)" fillcolor="#FCF3CF" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	feat1 [label="缺失值处理
+异常值过滤
+特征工程" fillcolor="#FCF3CF" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	feat2 [label="文本清洗
+心理语言学特征
+SMOTE平衡" fillcolor="#FCF3CF" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	model [label="模型构建
+(model_building.py)" fillcolor="#D5F5E3" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	clu [label="K-Means 聚类
++ t-SNE 降维
+→ 症状亚型发现" fillcolor="#D5F5E3" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	cls [label="分类模型
+RF / XGBoost
++ SMOTE + 5折CV
+→ 自杀风险识别" fillcolor="#D5F5E3" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	reg [label="预测模型
+RF / XGBoost / Stacking
++ 5折CV
+→ PHQ-9 评分预测" fillcolor="#D5F5E3" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	vis [label="可视化引擎
+(visualization.py)" fillcolor="#E8DAEF" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	plots [label="Plotly 交互图
+词云 / 热力图
+SHAP 可解释性" fillcolor="#E8DAEF" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	web [label="Streamlit Web 前端
+(app.py + main.py)" fillcolor="#FADBD8" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	pages [label="聚类分析 | 分类模型
+预测模型 | 数据可视化
++ 用户登录系统" fillcolor="#FADBD8" fontname="Microsoft YaHei" fontsize=12 shape=box style="filled,rounded"]
+	out [label="结果输出
+CSV报告 / PNG图片
+交互式图表" fillcolor="#D6EAF8" fontname="Microsoft YaHei" fontsize=12 shape=folder style="filled,rounded"]
+	raw1 -> feat1 [label="原始CSV" fontname="Microsoft YaHei" fontsize=10]
+	raw2 -> feat2 [label="原始CSV" fontname="Microsoft YaHei" fontsize=10]
+	feat1 -> prep [style=invis]
+	feat2 -> prep [style=invis]
+	prep -> clu [label="标准化 PHQ-9 特征" fontname="Microsoft YaHei" fontsize=10]
+	prep -> cls [label="文本特征向量" fontname="Microsoft YaHei" fontsize=10]
+	prep -> reg [label="人口统计 + 问卷特征" fontname="Microsoft YaHei" fontsize=10]
+	clu -> out [label="簇画像 / t-SNE 坐标" fontname="Microsoft YaHei" fontsize=10]
+	cls -> out [label="F1 / AUC / 特征重要性" fontname="Microsoft YaHei" fontsize=10]
+	reg -> out [label="R² / MAE / RMSE 残差分析" fontname="Microsoft YaHei" fontsize=10]
+	clu -> vis [label="数据传递" fontname="Microsoft YaHei" fontsize=9 style=dashed]
+	cls -> vis [style=dashed]
+	reg -> vis [style=dashed]
+	vis -> web [label="图表函数调用" fontname="Microsoft YaHei" fontsize=10]
+	web -> out [label="用户交互" fontname="Microsoft YaHei" fontsize=10 style=dashed]
+	pages -> model [label="重构按钮触发" fontname="Microsoft YaHei" fontsize=10 style=dotted]
+}

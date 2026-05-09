@@ -1,0 +1,30 @@
+# 基础依赖
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.8.4
+seaborn==0.13.2
+plotly==5.22.0
+streamlit==1.52.2
+
+# 数据处理
+chardet==5.2.0
+
+# 文本处理
+jieba==0.42.1
+nltk==3.8.1
+
+# 机器学习
+scikit-learn==1.4.2
+imbalanced-learn==0.12.3
+xgboost==2.0.3
+lightgbm==4.3.0
+
+# 深度学习
+transformers==4.38.2
+torch==2.3.0
+
+# 模型解释
+shap==0.46.0
+
+# 其他
+kaleido==0.2.1  # 用于Plotly导出图片
