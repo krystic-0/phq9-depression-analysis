@@ -24,3 +24,4 @@ shap
 
 # 其他
 kaleido
+wordcloud
