@@ -30,7 +30,7 @@ from visualization import (
 )
 
 # 缓存数据加载函数
-@st.cache_data(ttl=3600)  # 缓存1小时
+@st.cache_data(ttl=600)  # 缓存10分钟，云端更快刷新
 def load_depression_data():
     """加载抑郁症状数据"""
     try:
