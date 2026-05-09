@@ -172,35 +172,60 @@ class DepressionModelBuilder:
                 kmeans.fit(X_sample)
                 inertia.append(kmeans.inertia_)
 
-        # 绘制肘部法则
-        fig = plot_elbow_method(K_range, inertia)
-        fig.write_image('outputs/images/clustering_evaluation.png')
+        # 绘制肘部法则（matplotlib保存PNG，云端无需Chrome/kaleido）
+        K_vals = list(K_range)
+        plt_elbow = plot_elbow_method(K_range, inertia)
+        # 用matplotlib做静态图，plotly版留给UI交互
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        plt.rcParams['axes.unicode_minus'] = False
+
+        fig_mpl, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(K_vals, inertia, 'o-', color='#9370DB', linewidth=2, markersize=8)
+        ax.set_xlabel('K'); ax.set_ylabel('SSE / Inertia')
+        ax.set_title('Elbow method K=1..10')
+        ax.set_xticks(K_vals)
+        os.makedirs('outputs/images', exist_ok=True)
+        plt.tight_layout()
+        plt.savefig('outputs/images/clustering_evaluation.png', dpi=150, bbox_inches='tight')
+        plt.close()
         logger.info("聚类评估图已保存为 outputs/images/clustering_evaluation.png")
-        
+
         # 选择K=3进行聚类
         best_k = 3
         logger.info(f"选择最佳簇数: {best_k}")
-        
+
         # K-Means聚类
         kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=5)
         kmeans_labels = kmeans.fit_predict(X)
-        
+
         # 保存聚类结果
         self.depression_df.loc[X.index, 'kmeans_cluster'] = kmeans_labels
-        
+
         # 降维可视化（使用样本数据）
         logger.info("进行降维可视化...")
-        # 根据样本数量动态调整perplexity参数
         n_samples = len(X_sample)
         perplexity = min(30, n_samples - 1)
         logger.info(f"使用perplexity={perplexity}（样本数量={n_samples}）")
-        # 使用max_iter替代n_iter以避免警告
         tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity, n_iter=300)
         tsne_result = tsne.fit_transform(X_sample)
-        
-        # 生成图表并保存
-        fig = plot_tsne_clustering(tsne_result, kmeans_labels[:len(tsne_result)])
-        fig.write_image('outputs/images/clustering_visualization.png')
+
+        # 用matplotlib保存t-SNE静态图（避免kaleido依赖Chrome）
+        t_labels = kmeans_labels[:len(tsne_result)]
+        colors_list = ['#E74C3C', '#3498DB', '#2ECC71']
+        fig_tsne_mpl, ax_tsne = plt.subplots(figsize=(10, 8))
+        for cl in sorted(set(t_labels)):
+            mask = t_labels == cl
+            ax_tsne.scatter(tsne_result[mask, 0], tsne_result[mask, 1],
+                            c=colors_list[int(cl)], alpha=0.7, s=20,
+                            edgecolors='white', linewidth=0.3)
+        ax_tsne.set_xlabel('t-SNE 1'); ax_tsne.set_ylabel('t-SNE 2')
+        ax_tsne.set_title('t-SNE Clustering (K=3)')
+        plt.tight_layout()
+        plt.savefig('outputs/images/clustering_visualization.png', dpi=150, bbox_inches='tight')
+        plt.close()
         logger.info("聚类可视化图已保存为 outputs/images/clustering_visualization.png")
         
         # 簇画像分析
